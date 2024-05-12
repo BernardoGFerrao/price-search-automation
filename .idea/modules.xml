@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/Process Automation Project - Price search.iml" filepath="$PROJECT_DIR$/.idea/Process Automation Project - Price search.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/price-search-automation.iml" filepath="$PROJECT_DIR$/.idea/price-search-automation.iml" />
     </modules>
   </component>
 </project>
