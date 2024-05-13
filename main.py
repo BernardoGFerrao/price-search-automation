@@ -6,6 +6,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 import time
 import re
+
 #Criação navegador:
 navegador = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 
@@ -138,7 +139,7 @@ def buscar_buscape(navegador, produto, termos_banidos, preco_minimo, preco_maxim
 produtos_df = pd.read_excel('buscas.xlsx')
 
 tabela_ofertas = pd.DataFrame()
-# Iterando pelas linhas usando .index
+# Iterando pelas linhas do produtos_df usando .index
 for linha in produtos_df.index:
     produto = produtos_df.loc[linha, 'Nome']
     termos_banidos = produtos_df.loc[linha, 'Termos banidos']
@@ -160,10 +161,8 @@ for linha in produtos_df.index:
     else:
         tabela_buscape = None
 
-
-#Salvar as ofertas boas em um dataframe
-
 #Exportar pro excel
+tabela_ofertas.to_excel('ofertas.xlsx', index=False)
 
 #Enviar por email o resultado da tabela
 
