@@ -75,9 +75,32 @@ def buscar_google(navegador, produto, termos_banidos, preco_minimo, preco_maximo
             if preco <= preco_maximo and preco >= preco_minimo:
                 lista_produtos.append((nome, preco, link))
     return lista_produtos
-lista_produtos_google = buscar_google(navegador, 'iphone 12 64 gb', 'mini watch', 3000, 5000 )
-print(lista_produtos_google)
-##BUSCAPÉ:
+#lista_produtos_google = buscar_google(navegador, 'iphone 12 64 gb', 'mini watch', 3000, 5000 )
+
+def buscar_buscape(navegador, produto, termos_banidos, preco_minimo, preco_maximo):
+    ##BUSCAPÉ:
+    #Entrar no buscapé
+    link = "https://www.buscape.com.br"
+    navegador.get(link)
+
+    #Pesquisar pelo produto
+    produto = produto
+    produto = produto.lower()
+    lista_termos_nome = produto.split(' ')
+    termos_banidos = termos_banidos
+    termos_banidos = termos_banidos.lower()
+    lista_termos_banidos = termos_banidos.split(' ')
+    preco_minimo = preco_minimo
+    preco_maximo = preco_maximo
+
+    time.sleep(5)
+    barra_pesquisa = navegador.find_element('xpath', '//*[@id="new-header"]/div[1]/div/div/div[3]/div/div/div[2]/div/div[1]/input')
+    barra_pesquisa.send_keys(produto, Keys.ENTER)
+
+    lista_produtos = []
+  
+    return lista_produtos
+lista_produtos_buscape = buscar_buscape(navegador, 'iphone 12 64 gb', 'mini watch', 3000, 5000 )
 
 
 #Salvar as ofertas boas em um dataframe
