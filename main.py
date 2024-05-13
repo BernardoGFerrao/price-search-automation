@@ -32,7 +32,8 @@ def buscar_google(navegador, produto, termos_banidos, preco_minimo, preco_maximo
     barra_pesquisa.send_keys(produto, Keys.ENTER)
 
     #Entrar na aba shopping
-    time.sleep(5)
+    while len(navegador.find_elements('xpath', '//*[@id="hdtb-sc"]/div/div/div[1]/div/div[2]/a') == 0):
+        time.sleep(1)
     elemento = navegador.find_element('xpath', '//*[@id="hdtb-sc"]/div/div/div[1]/div/div[2]/a')
     link = elemento.get_attribute('href')  # Obter o link do elemento
     navegador.get(link)  # Acessar o link
@@ -93,15 +94,48 @@ def buscar_buscape(navegador, produto, termos_banidos, preco_minimo, preco_maxim
     preco_minimo = preco_minimo
     preco_maximo = preco_maximo
 
-    time.sleep(5)
     barra_pesquisa = navegador.find_element('xpath', '//*[@id="new-header"]/div[1]/div/div/div[3]/div/div/div[2]/div/div[1]/input')
     barra_pesquisa.send_keys(produto, Keys.ENTER)
-
+    #Pegar as informações do produto
+    lista_resultados = navegador.find_elements('class name', 'ProductCard_ProductCard_Inner__gapsh')
+    #Para cada resultado -> 1 nome, 1 link e 1 preco
     lista_produtos = []
-  
-    return lista_produtos
-lista_produtos_buscape = buscar_buscape(navegador, 'iphone 12 64 gb', 'mini watch', 3000, 5000 )
+    for resultado in lista_resultados:
+        while len(navegador.find_elements('class name', 'ProductCard_ProductCard_Inner__gapsh')) == 0:
+            time.sleep(1)
+        nome = resultado.find_element('class name', 'ProductCard_ProductCard_Name__U_mUQ').text
+        nome = nome.lower()
+        #Analisar se tem algum termo banido:
+        tem_termos_banidos = False
+        for palavra in lista_termos_banidos:
+            if palavra in nome:
+                tem_termos_banidos = True
+        #Analisar se tem todos os termos do nome do produto:
+        tem_todas_palavras = True
+        for palavra in lista_termos_nome:
+            if palavra not in nome:
+                tem_todas_palavras = False
 
+        if tem_todas_palavras and not tem_termos_banidos:
+            #Preço
+            preco = resultado.find_element('class name', 'Text_MobileHeadingS__HEz7L').text
+            preco = preco.replace('R$', '').replace('.', '').replace(' ', '').replace(',','.')
+            # Usando regex para encontrar o primeiro número decimal na string
+            match = re.search(r'\d+\.\d+', preco)
+            # Verifica se houve correspondência e converte para float
+            if match:
+                preco = float(match.group())
+            else:
+                continue
+            #Link
+            link = resultado.get_attribute('href')
+
+            #Verificação final:
+            if preco <= preco_maximo and preco >= preco_minimo:
+                lista_produtos.append((nome, preco, link))
+    return lista_produtos
+lista_produtos_buscape = buscar_buscape(navegador, 'iphone 12 64 gb', 'mini watch', 2000, 5000 )
+print(lista_produtos_buscape)
 
 #Salvar as ofertas boas em um dataframe
 
