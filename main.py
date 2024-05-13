@@ -12,6 +12,21 @@ navegador = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
 #Importar/Visualizar a base de dados
 produtos_df = pd.read_excel('buscas.xlsx')
 print(produtos_df)
+
+def verificar_termos_banidos(lista_termos_banidos, nome):
+    # Analisar se tem algum termo banido:
+    tem_termos_banidos = False
+    for palavra in lista_termos_banidos:
+        if palavra in nome:
+            tem_termos_banidos = True
+    return tem_termos_banidos
+def verificar_termos_nome(lista_termos_nome, nome):
+    # Analisar se tem todos os termos do nome do produto:
+    tem_todas_palavras = True
+    for palavra in lista_termos_nome:
+        if palavra not in nome:
+            tem_todas_palavras = False
+    return tem_todas_palavras
 def buscar_google(navegador, produto, termos_banidos, preco_minimo, preco_maximo):
     ##GOOGLE:
     #Entrar no google
@@ -46,15 +61,9 @@ def buscar_google(navegador, produto, termos_banidos, preco_minimo, preco_maximo
         nome = resultado.find_element('class name', 'tAxDx').text
         nome = nome.lower()
         #Analisar se tem algum termo banido:
-        tem_termos_banidos = False
-        for palavra in lista_termos_banidos:
-            if palavra in nome:
-                tem_termos_banidos = True
+        tem_termos_banidos = verificar_termos_banidos(lista_termos_banidos, nome)
         #Analisar se tem todos os termos do nome do produto:
-        tem_todas_palavras = True
-        for palavra in lista_termos_nome:
-            if palavra not in nome:
-                tem_todas_palavras = False
+        tem_todas_palavras = verificar_termos_nome(lista_termos_nome, nome)
 
         if tem_todas_palavras and not tem_termos_banidos:
             #Preço
@@ -105,16 +114,11 @@ def buscar_buscape(navegador, produto, termos_banidos, preco_minimo, preco_maxim
             time.sleep(1)
         nome = resultado.find_element('class name', 'ProductCard_ProductCard_Name__U_mUQ').text
         nome = nome.lower()
-        #Analisar se tem algum termo banido:
-        tem_termos_banidos = False
-        for palavra in lista_termos_banidos:
-            if palavra in nome:
-                tem_termos_banidos = True
-        #Analisar se tem todos os termos do nome do produto:
-        tem_todas_palavras = True
-        for palavra in lista_termos_nome:
-            if palavra not in nome:
-                tem_todas_palavras = False
+        
+        # Analisar se tem algum termo banido:
+        tem_termos_banidos = verificar_termos_banidos(lista_termos_banidos, nome)
+        # Analisar se tem todos os termos do nome do produto:
+        tem_todas_palavras = verificar_termos_nome(lista_termos_nome, nome)
 
         if tem_todas_palavras and not tem_termos_banidos:
             #Preço
