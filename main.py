@@ -1,15 +1,46 @@
 #Bibliotecas
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
+
 import pandas as pd
 import time
 import re
 
 #Criação navegador:
 navegador = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+def enviar_email():
+    # Criar o corpo do email
+    corpo_email = f"""
+    <p>Prezado,</p>
+    <p>Encontramos alguns produtos em oferta dentro da faixa de preço desejada</p>
+    {tabela_ofertas.to_html(index=False)}
+    <p>Att., Bernardo </p>
+    """
 
+    # Configurar a mensagem do email
+    msg = MIMEMultipart()
+    msg['Subject'] = f"Produto(s) encontrado(s) na faixa de preço desejada"
+    msg['From'] = 'seuemail@gmail.com'  # Coloque seu email aqui
+    msg['To'] = 'seuemail@gmail.com'
+
+    # Adicionar o corpo do email
+    msg.attach(MIMEText(corpo_email, 'html'))
+
+    # Configurações de segurança
+    s = smtplib.SMTP('smtp.gmail.com', 587)
+    s.starttls()
+    password = 'suasenhadeapp'  # Coloque sua senha aqui
+    s.login(msg['From'], password)
+
+    # Enviar o email
+    s.sendmail(msg['From'], msg['To'], msg.as_string())
+    print('Email enviado')
 def verificar_termos_banidos(lista_termos_banidos, nome):
     # Analisar se tem algum termo banido:
     tem_termos_banidos = False
@@ -165,7 +196,7 @@ for linha in produtos_df.index:
 tabela_ofertas.to_excel('ofertas.xlsx', index=False)
 
 #Enviar por email o resultado da tabela
+enviar_email()
 
 # Fecha o navegador
-time.sleep(100)
 navegador.quit()
